@@ -2,22 +2,34 @@ import React from 'react'
 import { connect } from 'react-redux'
 import actionSpreader from '../../futils/actionSpreader'
 
-const Home = props => (
-  <div>
-    <div onClick={props.toggleText}>Toggle Text</div>
+const Home = ({ startVideo, stopVideo, showLoader, videoSrc }) => (
+  <div className='home'>
+    <div className='videoContainer'>
+      {
+        videoSrc &&
+        <video src={window.URL.createObjectURL(videoSrc)} className='video' autoPlay></video>
+      }
+      {
+        showLoader &&
+        <div className='loader' />
+      }
+    </div>
     {
-      props.showText &&
-      <div>Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum</div>
+      !videoSrc
+      ? <div className='startVideo' onClick={startVideo}>Start</div>
+      : <div className='stopVideo' onClick={() =>stopVideo(videoSrc)}>Stop</div>
     }
   </div>
 )
 
 const mapStateToProps = state => ({
-  showText: state.home.showText
+  videoSrc: state.home.videoSrc,
+  showLoader: state.home.showLoader
 })
 
 const mapDispatchToProps = dispatch => ({
-  toggleText: () => dispatch(actionSpreader('TOGGLE_TEXT'))
+  startVideo: _ => dispatch(actionSpreader('GET_VIDEO_STREAM')),
+  stopVideo: stream => dispatch(actionSpreader('STOP_STREAM', stream))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
